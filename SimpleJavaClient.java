@@ -6,7 +6,7 @@ public class SimpleJavaClient {
     public static void main(String[] args) {
         try {
 
-            System.out.print("Digite qual sua operação:\nSOMA = Soma\nSUB = Subtração\nMULT = Multiplicação\nDIV = Divisão\n");
+            System.out.print("Digite qual sua operação:\nSOMA = Soma\nSUB = Subtração\nMULT = Multiplicação\nDIV = Divisão\nPOT = POTENCIA\nRAIZ = RAIZ\nPORC = PORCENTAGEM\n");
             byte[] line = new byte[100];
             System.in.read(line);
             String input1 = new String(line).trim();
