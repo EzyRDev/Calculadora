@@ -16,9 +16,7 @@ public class SimpleJavaClient {
                 OutputStream o = s.getOutputStream();
                 o.write(input1.getBytes());
 
-
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
 
                 System.out.print("Digite dois números separados por espaço: ");
                 String input = reader.readLine();
@@ -38,9 +36,7 @@ public class SimpleJavaClient {
                 OutputStream o = s.getOutputStream();
                 o.write(input1.getBytes());
 
-
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
 
                 System.out.print("Digite dois números separados por espaço:(Base) (Expoente)");
                 String input = reader.readLine();
@@ -60,9 +56,7 @@ public class SimpleJavaClient {
                 OutputStream o = s.getOutputStream();
                 o.write(input1.getBytes());
 
-
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
 
                 System.out.print("Digite o numero da raiz: ");
                 String input = reader.readLine();
@@ -83,9 +77,7 @@ public class SimpleJavaClient {
                 OutputStream o = s.getOutputStream();
                 o.write(input1.getBytes());
 
-
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
 
                 System.out.print("Digite dois números separados por espaço:(Numero) (Porcentagem)");
                 String input = reader.readLine();
