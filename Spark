@@ -1,0 +1,59 @@
+import spark.ModelAndView;
+import spark.Request;
+import spark.template.velocity.VelocityTemplateEngine;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static spark.Spark.*;
+
+public class Main {
+    public static void main(String[] args) {
+        exception(Exception.class, (e, req, res) -> e.printStackTrace());
+        staticFiles.location("/public");
+        port(8081);
+
+        get("/", (req, res) -> renderTodos(req));
+
+        get("/hello", (req, res) -> "Hello World");
+
+        get("/:operacao/:a/:b", (req, res) -> renderTodos(req));
+    }
+
+    private static String renderTodos(Request req) {
+        Map<String, Object> model = new HashMap<>();
+
+        String operacao = req.params(":operacao");
+        int a = Integer.parseInt(req.params(":a"));
+        int b = Integer.parseInt(req.params(":b"));
+
+        int resultado = 0;
+
+
+        switch (operacao) {
+            case "soma":
+                resultado = a + b;
+                break;
+            case "subtracao":
+                resultado = a - b;
+                break;
+            case "multiplicacao":
+                resultado = a * b;
+                break;
+            case "divisao":
+                resultado = a / b;
+                break;
+            default:
+                // Operação inválida
+                model.put("nome", "Operação inválida");
+                break;
+        }
+        if (!operacao.equals("")) {
+            model.put("nome", resultado);
+        }
+
+        return new VelocityTemplateEngine().render(new ModelAndView(model, "velocity/index.vm"));
+    }
+
+}
