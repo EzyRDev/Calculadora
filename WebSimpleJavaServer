@@ -1,0 +1,65 @@
+import java.io.*;
+import java.net.*;
+
+public class SimpleJavaServer {
+
+    public static void main(String[] args) {
+        try {
+            ServerSocket serverSocket = new ServerSocket(9999);
+            System.out.println("Servidor ouvindo na porta 9999...");
+
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Conexão estabelecida com " + clientSocket.getInetAddress());
+
+                InputStream input = clientSocket.getInputStream();
+                OutputStream output = clientSocket.getOutputStream();
+
+                byte[] buffer = new byte[1024];
+                int bytesRead = input.read(buffer);
+                String request = new String(buffer, 0, bytesRead);
+                System.out.println("Comando recebido: " + request);
+
+                String[] parts = request.trim().split(" ");
+                String operacao = parts[0].toUpperCase();
+                int a = Integer.parseInt(parts[1]);
+                int b = Integer.parseInt(parts[2]);
+
+                int resultado = 0;
+                String result = "";
+
+                switch (operacao) {
+                    case "SOMA":
+                        resultado = a + b;
+                        result = "A soma é " + resultado;
+                        break;
+                    case "SUB":
+                        resultado = a - b;
+                        result = "O resultado da subtração é " + resultado;
+                        break;
+                    case "MULT":
+                        resultado = a * b;
+                        result = "O resultado da multiplicação é " + resultado;
+                        break;
+                    case "DIV":
+                        if (b != 0) {
+                            resultado = a / b;
+                            result = "O resultado da divisão é " + resultado;
+                        } else {
+                            result = "Não é possível dividir por zero.";
+                        }
+                        break;
+                    default:
+                        result = "Operação inválida";
+                        break;
+                }
+
+                output.write(result.getBytes());
+
+                clientSocket.close();
+            }
+        } catch (Exception err) {
+            System.err.println(err);
+        }
+    }
+}
