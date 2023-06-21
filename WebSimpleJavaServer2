@@ -1,0 +1,62 @@
+import java.io.*;
+import java.net.*;
+
+public class SimpleJavaServer2 {
+
+    public static void main(String[] args) {
+        try {
+            ServerSocket serverSocket = new ServerSocket(8888);
+            System.out.println("Servidor ouvindo na porta 8888...");
+
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Conexão estabelecida com " + clientSocket.getInetAddress());
+
+                InputStream input = clientSocket.getInputStream();
+                OutputStream output = clientSocket.getOutputStream();
+
+                byte[] buffer = new byte[1024];
+                int bytesRead = input.read(buffer);
+                String request = new String(buffer, 0, bytesRead);
+                System.out.println("Comando recebido: " + request);
+
+                String[] parts = request.trim().split(" ");
+                String operacao = parts[0].toUpperCase();
+                int a = Integer.parseInt(parts[1]);
+                int b = Integer.parseInt(parts[2]);
+
+                int resultado = 0;
+                String response = "";
+
+                switch (operacao) {
+                    case "RAIZ":
+                        double number = Double.parseDouble(parts[1]);
+                        double result = Math.sqrt(number);
+                        response = "O resultado da Raiz é " + result;
+                        break;
+                    case "POT":
+                        double base = Double.parseDouble(parts[1]);
+                        double exponent = Double.parseDouble(parts[2]);
+                        double power = Math.pow(base, exponent);
+                        response = "O resultado da Potência é " + power;
+                        break;
+                    case "PORC":
+                        int value = Integer.parseInt(parts[1]);
+                        int percent = Integer.parseInt(parts[2]);
+                        int resultPercent = (value * percent) / 100;
+                        response = "O resultado da Porcentagem é " + resultPercent;
+                        break;
+                    default:
+                        response = "Operação inválida";
+                        break;
+                }
+
+                output.write(response.getBytes());
+
+                clientSocket.close();
+            }
+        } catch (Exception err) {
+            System.err.println(err);
+        }
+    }
+}
