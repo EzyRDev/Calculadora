@@ -1,0 +1,121 @@
+import spark.ModelAndView;
+import spark.Request;
+import spark.template.velocity.VelocityTemplateEngine;
+
+import java.io.*;
+import java.net.*;
+
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import static spark.Spark.*;
+
+public class Main {
+    public static void main(String[] args) {
+        exception(Exception.class, (e, req, res) -> e.printStackTrace());
+        staticFiles.location("/public");
+        port(8081);
+
+        get("/", (req, res) -> renderTodos(req));
+
+        get("/hello", (req, res) -> "Hello World");
+
+        get("/:operacao/:a/:b", (req, res) -> renderTodos(req));
+
+        get("/:operacao/:a", (req, res) -> renderTodos(req));
+
+
+        startSimpleJavaServer();
+        startSimpleJavaServer2();
+    }
+
+    private static String renderTodos(Request req) {
+        Map<String, Object> model = new HashMap<>();
+
+        String operacao = req.params(":operacao");
+        int a = Integer.parseInt(req.params(":a"));
+        int b = Integer.parseInt(req.params(":b"));
+
+        String response = sendRequestToSimpleJavaServer(operacao.toUpperCase(), a, b);
+        model.put("nome", response);
+
+        return new VelocityTemplateEngine().render(new ModelAndView(model, "velocity/index.vm"));
+    }
+
+    private static String sendRequestToSimpleJavaServer(String operacao, int a, int b) {
+        try {
+            int port = 9999;
+            if (operacao.equals("RAIZ") || operacao.equals("POT") || operacao.equals("PORC")) {
+                port = 8888;
+            }
+            Socket clientSocket = new Socket("localhost", port);
+            System.out.println("Conexão estabelecida com o servidor SimpleJavaServer");
+
+            InputStream input = clientSocket.getInputStream();
+            OutputStream output = clientSocket.getOutputStream();
+
+            String request = operacao + " " + a + " " + b;
+            output.write(request.getBytes());
+
+            byte[] buffer = new byte[1024];
+            int bytesRead = input.read(buffer);
+            String response = new String(buffer, 0, bytesRead);
+
+            clientSocket.close();
+
+            return response.trim();
+        } catch (Exception err) {
+            System.err.println(err);
+            return "Erro ao enviar a solicitação ao servidor SimpleJavaServer.";
+        }
+    }
+
+    private static void startSimpleJavaServer() {
+        Thread serverThread = new Thread(() -> {
+            try {
+                ProcessBuilder processBuilder = new ProcessBuilder("java", "SimpleJavaServer");
+                processBuilder.redirectErrorStream(true);
+                Process process = processBuilder.start();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+
+                int result = process.waitFor();
+                System.out.println("Servidor SimpleJavaServer encerrado com código de saída: " + result);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        serverThread.start();
+    }
+
+    private static void startSimpleJavaServer2() {
+        Thread serverThread = new Thread(() -> {
+            try {
+                ProcessBuilder processBuilder = new ProcessBuilder("java", "SimpleJavaServer2");
+                processBuilder.redirectErrorStream(true);
+                Process process = processBuilder.start();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+
+                int result = process.waitFor();
+                System.out.println("Servidor SimpleJavaServer2 encerrado com código de saída: " + result);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        serverThread.start();
+    }
+}
